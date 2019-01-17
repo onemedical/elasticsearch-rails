@@ -35,8 +35,8 @@ module ElasticsearchV2
           end
 
           ImportArticle.delete_all
-          ImportArticle.__elasticsearch__.create_index! force: true
-          ImportArticle.__elasticsearch__.client.cluster.health wait_for_status: 'yellow'
+          ImportArticle.__elasticsearch_v2__.create_index! force: true
+          ImportArticle.__elasticsearch_v2__.client.cluster.health wait_for_status: 'yellow'
 
           100.times { |i| ImportArticle.create! title: "Test #{i}", views: i }
         end
@@ -44,7 +44,7 @@ module ElasticsearchV2
         should "import all the documents" do
           assert_equal 100, ImportArticle.count
 
-          ImportArticle.__elasticsearch__.refresh_index!
+          ImportArticle.__elasticsearch_v2__.refresh_index!
           assert_equal 0, ImportArticle.search('*').results.total
 
           batches = 0
@@ -55,7 +55,7 @@ module ElasticsearchV2
           assert_equal 0, errors
           assert_equal 10, batches
 
-          ImportArticle.__elasticsearch__.refresh_index!
+          ImportArticle.__elasticsearch_v2__.refresh_index!
           assert_equal 100, ImportArticle.search('*').results.total
         end
 
@@ -64,7 +64,7 @@ module ElasticsearchV2
 
           assert_equal 0, ImportArticle.import(scope: 'popular')
 
-          ImportArticle.__elasticsearch__.refresh_index!
+          ImportArticle.__elasticsearch_v2__.refresh_index!
           assert_equal 50, ImportArticle.search('*').results.total
         end
 
@@ -73,7 +73,7 @@ module ElasticsearchV2
 
           assert_equal 0, ImportArticle.import(query: -> { where('views >= 30') })
 
-          ImportArticle.__elasticsearch__.refresh_index!
+          ImportArticle.__elasticsearch_v2__.refresh_index!
           assert_equal 70, ImportArticle.search('*').results.total
         end
 
@@ -82,18 +82,18 @@ module ElasticsearchV2
 
           assert_equal 101, ImportArticle.count
 
-          ImportArticle.__elasticsearch__.refresh_index!
+          ImportArticle.__elasticsearch_v2__.refresh_index!
           assert_equal 0, ImportArticle.search('*').results.total
 
           batches = 0
-          errors  = ImportArticle.__elasticsearch__.import(batch_size: 10) do |response|
+          errors  = ImportArticle.__elasticsearch_v2__.import(batch_size: 10) do |response|
             batches += 1
           end
 
           assert_equal 1, errors
           assert_equal 11, batches
 
-          ImportArticle.__elasticsearch__.refresh_index!
+          ImportArticle.__elasticsearch_v2__.refresh_index!
           assert_equal 100, ImportArticle.search('*').results.total
         end
 
@@ -102,7 +102,7 @@ module ElasticsearchV2
 
           assert_equal 0, ImportArticle.import( transform: ->(a) {{ index: { data: { name: a.title, foo: 'BAR' } }}} )
 
-          ImportArticle.__elasticsearch__.refresh_index!
+          ImportArticle.__elasticsearch_v2__.refresh_index!
           assert_contains ImportArticle.search('*').results.first._source.keys, 'name'
           assert_contains ImportArticle.search('*').results.first._source.keys, 'foo'
           assert_equal 100, ImportArticle.search('test').results.total

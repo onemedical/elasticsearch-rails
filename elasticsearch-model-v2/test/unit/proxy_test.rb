@@ -31,11 +31,11 @@ class ElasticsearchV2::Model::SearchTest < Test::Unit::TestCase
     end
 
     should "setup the class proxy method" do
-      assert_respond_to DummyProxyModel, :__elasticsearch__
+      assert_respond_to DummyProxyModel, :__elasticsearch_v2__
     end
 
     should "setup the instance proxy method" do
-      assert_respond_to DummyProxyModel.new, :__elasticsearch__
+      assert_respond_to DummyProxyModel.new, :__elasticsearch_v2__
     end
 
     should "register the hook for before_save callback" do
@@ -45,7 +45,7 @@ class ElasticsearchV2::Model::SearchTest < Test::Unit::TestCase
 
     should "set the @__changed_attributes variable before save" do
       instance = ::DummyProxyModelWithCallbacks.new
-      instance.__elasticsearch__.expects(:instance_variable_set).with do |name, value|
+      instance.__elasticsearch_v2__.expects(:instance_variable_set).with do |name, value|
         assert_equal :@__changed_attributes, name
         assert_equal({foo: 'Two'}, value)
         true
@@ -59,21 +59,21 @@ class ElasticsearchV2::Model::SearchTest < Test::Unit::TestCase
     end
 
     should "delegate methods to the target" do
-      assert_respond_to DummyProxyModel.__elasticsearch__,     :foo
-      assert_respond_to DummyProxyModel.new.__elasticsearch__, :bar
+      assert_respond_to DummyProxyModel.__elasticsearch_v2__,     :foo
+      assert_respond_to DummyProxyModel.new.__elasticsearch_v2__, :bar
 
-      assert_raise(NoMethodError) { DummyProxyModel.__elasticsearch__.xoxo }
-      assert_raise(NoMethodError) { DummyProxyModel.new.__elasticsearch__.xoxo }
+      assert_raise(NoMethodError) { DummyProxyModel.__elasticsearch_v2__.xoxo }
+      assert_raise(NoMethodError) { DummyProxyModel.new.__elasticsearch_v2__.xoxo }
 
-      assert_equal 'classy foo', DummyProxyModel.__elasticsearch__.foo
-      assert_equal 'insta barr', DummyProxyModel.new.__elasticsearch__.bar
+      assert_equal 'classy foo', DummyProxyModel.__elasticsearch_v2__.foo
+      assert_equal 'insta barr', DummyProxyModel.new.__elasticsearch_v2__.bar
     end
 
     should "reset the proxy target for duplicates" do
       model = DummyProxyModel.new
-      model_target = model.__elasticsearch__.target
+      model_target = model.__elasticsearch_v2__.target
       duplicate = model.dup
-      duplicate_target = duplicate.__elasticsearch__.target
+      duplicate_target = duplicate.__elasticsearch_v2__.target
 
       assert_not_equal model, duplicate
       assert_equal model, model_target
@@ -81,20 +81,20 @@ class ElasticsearchV2::Model::SearchTest < Test::Unit::TestCase
     end
 
     should "return the proxy class from instance proxy" do
-      assert_equal ElasticsearchV2::Model::Proxy::ClassMethodsProxy, DummyProxyModel.new.__elasticsearch__.class.class
+      assert_equal ElasticsearchV2::Model::Proxy::ClassMethodsProxy, DummyProxyModel.new.__elasticsearch_v2__.class.class
     end
 
     should "return the origin class from instance proxy" do
-      assert_equal DummyProxyModel, DummyProxyModel.new.__elasticsearch__.klass
+      assert_equal DummyProxyModel, DummyProxyModel.new.__elasticsearch_v2__.klass
     end
 
     should "delegate as_json from the proxy to target" do
-      assert_equal({foo: 'bar'}, DummyProxyModel.new.__elasticsearch__.as_json)
+      assert_equal({foo: 'bar'}, DummyProxyModel.new.__elasticsearch_v2__.as_json)
     end
 
     should "have inspect method indicating the proxy" do
-      assert_match /PROXY/, DummyProxyModel.__elasticsearch__.inspect
-      assert_match /PROXY/, DummyProxyModel.new.__elasticsearch__.inspect
+      assert_match /PROXY/, DummyProxyModel.__elasticsearch_v2__.inspect
+      assert_match /PROXY/, DummyProxyModel.new.__elasticsearch_v2__.inspect
     end
   end
 end

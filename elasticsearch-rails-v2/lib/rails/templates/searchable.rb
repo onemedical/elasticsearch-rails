@@ -200,7 +200,7 @@ module Searchable
         }
       end
 
-      __elasticsearch__.search(@search_definition)
+      __elasticsearch_v2__.search(@search_definition)
     end
   end
 end

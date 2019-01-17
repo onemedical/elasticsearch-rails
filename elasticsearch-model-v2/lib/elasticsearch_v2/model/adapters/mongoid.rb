@@ -49,9 +49,9 @@ module ElasticsearchV2
           # @see http://mongoid.org/en/mongoid/docs/callbacks.html
           #
           def self.included(base)
-            base.after_create  { |document| document.__elasticsearch__.index_document  }
-            base.after_update  { |document| document.__elasticsearch__.update_document }
-            base.after_destroy { |document| document.__elasticsearch__.delete_document }
+            base.after_create  { |document| document.__elasticsearch_v2__.index_document  }
+            base.after_update  { |document| document.__elasticsearch_v2__.update_document }
+            base.after_destroy { |document| document.__elasticsearch_v2__.delete_document }
           end
         end
 

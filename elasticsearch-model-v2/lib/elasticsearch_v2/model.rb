@@ -56,7 +56,7 @@ module ElasticsearchV2
   #
   # When the `ElasticsearchV2::Model` module is included in your class, it automatically extends it
   # with the functionality; see {ElasticsearchV2::Model.included}. Most methods are available via
-  # the `__elasticsearch__` class and instance method proxies.
+  # the `__elasticsearch_v2__` class and instance method proxies.
   #
   # It is possible to include/extend the model with the corresponding
   # modules directly, if that is desired:
@@ -71,7 +71,7 @@ module ElasticsearchV2
 
     # Adds the `ElasticsearchV2::Model` functionality to the including class.
     #
-    # * Creates the `__elasticsearch__` class and instance methods, pointing to the proxy object
+    # * Creates the `__elasticsearch_v2__` class and instance methods, pointing to the proxy object
     # * Includes the necessary modules in the proxy classes
     # * Sets up delegation for crucial methods such as `search`, etc.
     #
@@ -110,17 +110,17 @@ module ElasticsearchV2
           end
         CODE
 
-        # Delegate important methods to the `__elasticsearch__` proxy, unless they are defined already
+        # Delegate important methods to the `__elasticsearch_v2__` proxy, unless they are defined already
         #
         class << self
           METHODS.each do |method|
-            delegate method, to: :__elasticsearch__ unless self.public_instance_methods.include?(method)
+            delegate method, to: :__elasticsearch_v2__ unless self.public_instance_methods.include?(method)
           end
         end
 
         # Mix the importing module into the proxy
         #
-        self.__elasticsearch__.class_eval do
+        self.__elasticsearch_v2__.class_eval do
           include ElasticsearchV2::Model::Importing::ClassMethods
           include Adapter.from_class(base).importing_mixin
         end

@@ -148,7 +148,7 @@ class ElasticsearchV2::Model::AdapterActiveRecordTest < Test::Unit::TestCase
         end
 
         should "provide default transformation" do
-          model = mock("model", id: 1, __elasticsearch__: stub(as_indexed_json: {}))
+          model = mock("model", id: 1, __elasticsearch_v2__: stub(as_indexed_json: {}))
           assert_equal @transform.call(model), { index: { _id: 1, data: {} } }
         end
       end

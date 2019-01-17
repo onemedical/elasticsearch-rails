@@ -19,9 +19,9 @@ class Question < ActiveRecord::Base
     indexes :author
   end
 
-  after_commit lambda { __elasticsearch__.index_document  },  on: :create
-  after_commit lambda { __elasticsearch__.update_document },  on: :update
-  after_commit lambda { __elasticsearch__.delete_document },  on: :destroy
+  after_commit lambda { __elasticsearch_v2__.index_document  },  on: :create
+  after_commit lambda { __elasticsearch_v2__.update_document },  on: :update
+  after_commit lambda { __elasticsearch_v2__.delete_document },  on: :destroy
 end
 
 class Answer < ActiveRecord::Base
@@ -36,16 +36,16 @@ class Answer < ActiveRecord::Base
     indexes :author
   end
 
-  after_commit lambda { __elasticsearch__.index_document(parent: question_id)  },  on: :create
-  after_commit lambda { __elasticsearch__.update_document(parent: question_id) },  on: :update
-  after_commit lambda { __elasticsearch__.delete_document(parent: question_id) },  on: :destroy
+  after_commit lambda { __elasticsearch_v2__.index_document(parent: question_id)  },  on: :create
+  after_commit lambda { __elasticsearch_v2__.update_document(parent: question_id) },  on: :update
+  after_commit lambda { __elasticsearch_v2__.delete_document(parent: question_id) },  on: :destroy
 end
 
 module ParentChildSearchable
   INDEX_NAME = 'questions_and_answers'
 
   def create_index!(options={})
-    client = Question.__elasticsearch__.client
+    client = Question.__elasticsearch_v2__.client
     client.indices.delete index: INDEX_NAME rescue nil if options[:force]
 
     settings = Question.settings.to_hash.merge Answer.settings.to_hash
@@ -95,7 +95,7 @@ module ElasticsearchV2
 
           q_2.answers.create! text: 'Amet Et', author: 'John'
 
-          Question.__elasticsearch__.refresh_index!
+          Question.__elasticsearch_v2__.refresh_index!
         end
 
         should "find questions by matching answers" do
@@ -134,7 +134,7 @@ module ElasticsearchV2
 
         should "delete answers when the question is deleted" do
           Question.where(title: 'First Question').each(&:destroy)
-          Question.__elasticsearch__.refresh_index!
+          Question.__elasticsearch_v2__.refresh_index!
 
           response = Answer.search query: { match_all: {} }
 

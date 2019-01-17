@@ -102,7 +102,7 @@ module ElasticsearchV2
         # @example Set the index name for an instance of the `Article` model
         #
         #     @article.index_name "articles-#{@article.user_id}"
-        #     @article.__elasticsearch__.update_document
+        #     @article.__elasticsearch_v2__.update_document
         #
         def index_name name=nil, &block
           if name || block_given?
@@ -126,7 +126,7 @@ module ElasticsearchV2
         # @example Set the document type for an instance of the `Article` model
         #
         #     @article.document_type "my-article"
-        #     @article.__elasticsearch__.update_document
+        #     @article.__elasticsearch_v2__.update_document
         #
         def document_type name=nil
           @document_type = name || @document_type || self.class.document_type

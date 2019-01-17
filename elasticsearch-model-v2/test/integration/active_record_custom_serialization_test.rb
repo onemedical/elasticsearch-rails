@@ -33,13 +33,13 @@ module ElasticsearchV2
           end
 
           ArticleWithCustomSerialization.delete_all
-          ArticleWithCustomSerialization.__elasticsearch__.create_index! force: true
+          ArticleWithCustomSerialization.__elasticsearch_v2__.create_index! force: true
         end
 
         should "index only the title attribute when creating" do
           ArticleWithCustomSerialization.create! title: 'Test', status: 'green'
 
-          a = ArticleWithCustomSerialization.__elasticsearch__.client.get \
+          a = ArticleWithCustomSerialization.__elasticsearch_v2__.client.get \
                 index: 'article_with_custom_serializations',
                 type:  'article_with_custom_serialization',
                 id:    '1'
@@ -53,7 +53,7 @@ module ElasticsearchV2
           article = ArticleWithCustomSerialization.first
           article.update_attributes title: 'UPDATED', status: 'red'
 
-          a = ArticleWithCustomSerialization.__elasticsearch__.client.get \
+          a = ArticleWithCustomSerialization.__elasticsearch_v2__.client.get \
                 index: 'article_with_custom_serializations',
                 type:  'article_with_custom_serialization',
                 id:    '1'

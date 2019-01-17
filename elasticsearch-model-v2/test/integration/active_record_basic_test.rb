@@ -45,13 +45,13 @@ module ElasticsearchV2
           end
 
           Article.delete_all
-          Article.__elasticsearch__.create_index! force: true
+          Article.__elasticsearch_v2__.create_index! force: true
 
           ::Article.create! title: 'Test',           body: '', clicks: 1
           ::Article.create! title: 'Testing Coding', body: '', clicks: 2
           ::Article.create! title: 'Coding',         body: '', clicks: 3
 
-          Article.__elasticsearch__.refresh_index!
+          Article.__elasticsearch_v2__.refresh_index!
         end
 
         should "index and find a document" do
@@ -126,7 +126,7 @@ module ElasticsearchV2
           article.destroy
           assert_equal 2, Article.count
 
-          Article.__elasticsearch__.refresh_index!
+          Article.__elasticsearch_v2__.refresh_index!
 
           response = Article.search 'title:test'
 
@@ -140,7 +140,7 @@ module ElasticsearchV2
           article.title = 'Writing'
           article.save
 
-          Article.__elasticsearch__.refresh_index!
+          Article.__elasticsearch_v2__.refresh_index!
 
           response = Article.search 'title:write'
 
@@ -156,9 +156,9 @@ module ElasticsearchV2
           assert_equal 0, response.results.size
           assert_equal 0, response.records.size
 
-          article.__elasticsearch__.update_document_attributes title: 'special'
+          article.__elasticsearch_v2__.update_document_attributes title: 'special'
 
-          Article.__elasticsearch__.refresh_index!
+          Article.__elasticsearch_v2__.refresh_index!
 
           response = Article.search 'title:special'
 
@@ -181,8 +181,8 @@ module ElasticsearchV2
             article.save
           end
 
-          article.__elasticsearch__.update_document
-          Article.__elasticsearch__.refresh_index!
+          article.__elasticsearch_v2__.update_document
+          Article.__elasticsearch_v2__.refresh_index!
 
           response = Article.search 'body:dummy'
           assert_equal 1, response.results.size

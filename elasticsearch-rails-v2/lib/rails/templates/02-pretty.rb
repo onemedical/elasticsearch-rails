@@ -68,7 +68,7 @@ insert_into_file 'app/models/article.rb', <<-CODE, after: 'include Elasticsearch
 
 
   def self.search(query)
-    __elasticsearch__.search(
+    __elasticsearch_v2__.search(
       {
         query: {
           multi_match: {
@@ -92,15 +92,15 @@ CODE
 insert_into_file "#{Rails::VERSION::STRING > '4' ? 'test/models' : 'test/unit' }/article_test.rb", <<-CODE, after: /class ArticleTest < ActiveSupport::TestCase$/
 
   teardown do
-    Article.__elasticsearch__.unstub(:search)
+    Article.__elasticsearch_v2__.unstub(:search)
   end
 
 CODE
 
 gsub_file "#{Rails::VERSION::STRING > '4' ? 'test/models' : 'test/unit' }/article_test.rb", %r{# test "the truth" do.*?# end}m, <<-CODE
 
-  test "has a search method delegating to __elasticsearch__" do
-    Article.__elasticsearch__.expects(:search).with do |definition|
+  test "has a search method delegating to __elasticsearch_v2__" do
+    Article.__elasticsearch_v2__.expects(:search).with do |definition|
       assert_equal 'foo', definition[:query][:multi_match][:query]
       true
     end
@@ -277,7 +277,7 @@ puts
 say_status  "Database", "Creating 1,000 articles...", :yellow
 puts        '-'*80, '';
 
-run  "rails runner 'Article.__elasticsearch__.create_index! force: true'"
+run  "rails runner 'Article.__elasticsearch_v2__.create_index! force: true'"
 rake "db:seed COUNT=1_000"
 
 # ----- Print Git log -----------------------------------------------------------------------------

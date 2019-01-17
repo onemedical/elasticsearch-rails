@@ -32,11 +32,11 @@ class Article < ActiveRecord::Base
   end
 end
 
-Article.__elasticsearch__.client = ElasticsearchV2::Client.new log: true
+Article.__elasticsearch_v2__.client = ElasticsearchV2::Client.new log: true
 
 # Create index
 
-Article.__elasticsearch__.create_index! force: true
+Article.__elasticsearch_v2__.create_index! force: true
 
 # Store data
 
@@ -44,7 +44,7 @@ Article.delete_all
 Article.create title: 'Foo'
 Article.create title: 'Bar'
 Article.create title: 'Foo Foo'
-Article.__elasticsearch__.refresh_index!
+Article.__elasticsearch_v2__.refresh_index!
 
 # Search and suggest
 
@@ -53,7 +53,7 @@ response_1 = Article.search 'foo';
 puts "Article search:".ansi(:bold),
      response_1.to_a.map { |d| "Title: #{d.title}" }.inspect.ansi(:bold, :yellow)
 
-response_2 = Article.__elasticsearch__.client.suggest \
+response_2 = Article.__elasticsearch_v2__.client.suggest \
   index: Article.index_name,
   body: {
     articles: {

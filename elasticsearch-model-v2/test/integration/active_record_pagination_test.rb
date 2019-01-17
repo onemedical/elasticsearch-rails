@@ -35,14 +35,14 @@ module ElasticsearchV2
           Kaminari::Hooks.init if defined?(Kaminari::Hooks)
 
           ArticleForPagination.delete_all
-          ArticleForPagination.__elasticsearch__.create_index! force: true
+          ArticleForPagination.__elasticsearch_v2__.create_index! force: true
 
           68.times do |i|
             ::ArticleForPagination.create! title: "Test #{i}", published: (i % 2 == 0)
           end
 
           ArticleForPagination.import
-          ArticleForPagination.__elasticsearch__.refresh_index!
+          ArticleForPagination.__elasticsearch_v2__.refresh_index!
         end
 
         should "be on the first page by default" do

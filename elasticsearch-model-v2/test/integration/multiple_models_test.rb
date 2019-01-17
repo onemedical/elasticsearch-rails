@@ -51,11 +51,11 @@ module ElasticsearchV2
 
           [::Episode, ::Series].each do |model|
             model.delete_all
-            model.__elasticsearch__.create_index! force: true
+            model.__elasticsearch_v2__.create_index! force: true
             model.create name: "The #{model.name}"
             model.create name: "A great #{model.name}"
             model.create name: "The greatest #{model.name}"
-            model.__elasticsearch__.refresh_index!
+            model.__elasticsearch_v2__.refresh_index!
           end
         end
 
@@ -92,7 +92,7 @@ module ElasticsearchV2
 
         should "only retrieve records for existing results" do
           ::Series.find_by_name("The greatest Series").delete
-          ::Series.__elasticsearch__.refresh_index!
+          ::Series.__elasticsearch_v2__.refresh_index!
           response = ElasticsearchV2::Model.search(%q<"The greatest Episode"^2 OR "The greatest Series">, [Series, Episode])
 
           assert response.any?, "Response should not be empty: #{response.to_a.inspect}"
@@ -141,12 +141,12 @@ module ElasticsearchV2
               end
 
               Image.delete_all
-              Image.__elasticsearch__.create_index! force: true
+              Image.__elasticsearch_v2__.create_index! force: true
               Image.create! name: "The Image"
               Image.create! name: "A great Image"
               Image.create! name: "The greatest Image"
-              Image.__elasticsearch__.refresh_index!
-              Image.__elasticsearch__.client.cluster.health wait_for_status: 'yellow'
+              Image.__elasticsearch_v2__.refresh_index!
+              Image.__elasticsearch_v2__.client.cluster.health wait_for_status: 'yellow'
             end
 
             should "find matching documents across multiple models" do

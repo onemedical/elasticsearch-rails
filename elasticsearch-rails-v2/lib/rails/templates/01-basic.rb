@@ -240,8 +240,8 @@ gsub_file "#{Rails::VERSION::STRING > '4' ? 'test/controllers' : 'test/functiona
 setup do
     @article = articles(:one)
 
-    Article.__elasticsearch__.import
-    Article.__elasticsearch__.refresh_index!
+    Article.__elasticsearch_v2__.import
+    Article.__elasticsearch_v2__.refresh_index!
   end
 CODE
 
@@ -298,7 +298,7 @@ else
 end
 }
 
-run  "rails runner 'Article.__elasticsearch__.create_index! force: true'"
+run  "rails runner 'Article.__elasticsearch_v2__.create_index! force: true'"
 rake "db:seed"
 
 git add:    "db/seeds.rb"

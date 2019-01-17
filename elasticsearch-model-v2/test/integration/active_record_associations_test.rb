@@ -58,7 +58,7 @@ module ElasticsearchV2
 
           # Update document in the index after touch
           #
-          after_touch() { __elasticsearch__.index_document }
+          after_touch() { __elasticsearch_v2__.index_document }
         end
       end
 
@@ -132,16 +132,16 @@ module ElasticsearchV2
           end
 
           class Post < ActiveRecord::Base
-            has_and_belongs_to_many :categories, after_add:    [ lambda { |a,c| a.__elasticsearch__.index_document } ],
-                                                 after_remove: [ lambda { |a,c| a.__elasticsearch__.index_document } ]
+            has_and_belongs_to_many :categories, after_add:    [ lambda { |a,c| a.__elasticsearch_v2__.index_document } ],
+                                                 after_remove: [ lambda { |a,c| a.__elasticsearch_v2__.index_document } ]
             has_many                :authorships
             has_many                :authors, through: :authorships,
-                                              after_add: [ lambda { |a,c| a.__elasticsearch__.index_document } ],
-                                              after_remove: [ lambda { |a,c| a.__elasticsearch__.index_document } ]
-            has_many                :comments, after_add:    [ lambda { |a,c| a.__elasticsearch__.index_document } ],
-                                               after_remove: [ lambda { |a,c| a.__elasticsearch__.index_document } ]
+                                              after_add: [ lambda { |a,c| a.__elasticsearch_v2__.index_document } ],
+                                              after_remove: [ lambda { |a,c| a.__elasticsearch_v2__.index_document } ]
+            has_many                :comments, after_add:    [ lambda { |a,c| a.__elasticsearch_v2__.index_document } ],
+                                               after_remove: [ lambda { |a,c| a.__elasticsearch_v2__.index_document } ]
 
-            after_touch() { __elasticsearch__.index_document }
+            after_touch() { __elasticsearch_v2__.index_document }
           end
 
           # Include the search integration
@@ -153,17 +153,17 @@ module ElasticsearchV2
           # ----- Reset the indices -----------------------------------------------------------------
 
           Post.delete_all
-          Post.__elasticsearch__.create_index! force: true
+          Post.__elasticsearch_v2__.create_index! force: true
 
           Comment.delete_all
-          Comment.__elasticsearch__.create_index! force: true
+          Comment.__elasticsearch_v2__.create_index! force: true
         end
 
         should "index and find a document" do
           Post.create! title: 'Test'
           Post.create! title: 'Testing Coding'
           Post.create! title: 'Coding'
-          Post.__elasticsearch__.refresh_index!
+          Post.__elasticsearch_v2__.refresh_index!
 
           response = Post.search('title:test')
 
@@ -185,7 +185,7 @@ module ElasticsearchV2
           # Assign categories
           post.categories = [category_a,  category_b]
 
-          Post.__elasticsearch__.refresh_index!
+          Post.__elasticsearch_v2__.refresh_index!
 
           query = { query: {
                       filtered: {
@@ -212,7 +212,7 @@ module ElasticsearchV2
           # Remove category "One"
           post.categories = [category_b]
 
-          Post.__elasticsearch__.refresh_index!
+          Post.__elasticsearch_v2__.refresh_index!
           response = Post.search query
 
           assert_equal 0, response.results.size
@@ -235,7 +235,7 @@ module ElasticsearchV2
           post_2.authors = [author_a]
           post_3.authors = [author_c]
 
-          Post.__elasticsearch__.refresh_index!
+          Post.__elasticsearch_v2__.refresh_index!
 
           response = Post.search 'authors.full_name:john'
 
@@ -244,7 +244,7 @@ module ElasticsearchV2
 
           post_3.authors << author_a
 
-          Post.__elasticsearch__.refresh_index!
+          Post.__elasticsearch_v2__.refresh_index!
 
           response = Post.search 'authors.full_name:john'
 
@@ -263,7 +263,7 @@ module ElasticsearchV2
 
           post_2.comments.create! author: 'John', text: 'Terrible'
 
-          Post.__elasticsearch__.refresh_index!
+          Post.__elasticsearch_v2__.refresh_index!
 
           response = Post.search 'comments.author:john AND comments.text:good'
           assert_equal 0, response.results.size
@@ -271,7 +271,7 @@ module ElasticsearchV2
           # Add comment
           post_1.comments.create! author: 'John', text: 'Or rather just good...'
 
-          Post.__elasticsearch__.refresh_index!
+          Post.__elasticsearch_v2__.refresh_index!
 
           response = Post.search 'comments.author:john AND comments.text:good'
           assert_equal 0, response.results.size
@@ -304,7 +304,7 @@ module ElasticsearchV2
           # Assign category
           post.categories << category_a
 
-          Post.__elasticsearch__.refresh_index!
+          Post.__elasticsearch_v2__.refresh_index!
 
           assert_equal 1, Post.search('categories:One').size
 
@@ -314,7 +314,7 @@ module ElasticsearchV2
           # Trigger touch on posts in category
           category_a.posts.each { |p| p.touch }
 
-          Post.__elasticsearch__.refresh_index!
+          Post.__elasticsearch_v2__.refresh_index!
 
           assert_equal 0, Post.search('categories:One').size
           assert_equal 1, Post.search('categories:Updated').size
@@ -326,7 +326,7 @@ module ElasticsearchV2
           post_1.comments.create text: 'First comment'
           post_1.comments.create text: 'Second comment'
 
-          Comment.__elasticsearch__.refresh_index!
+          Comment.__elasticsearch_v2__.refresh_index!
 
           records = Comment.search('first').records(includes: :post)
 

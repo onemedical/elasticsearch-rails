@@ -32,8 +32,8 @@ class SearchControllerTest < ActionController::TestCase
 
     Sidekiq::Worker.clear_all
 
-    Article.__elasticsearch__.import force: true
-    Article.__elasticsearch__.refresh_index!
+    Article.__elasticsearch_v2__.import force: true
+    Article.__elasticsearch_v2__.refresh_index!
   end
 
   test "should return search results" do

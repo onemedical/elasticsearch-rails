@@ -31,8 +31,8 @@ class ElasticsearchV2::Model::ModuleTest < Test::Unit::TestCase
       should "include and set up the proxy" do
         DummyIncludingModel.__send__ :include, ElasticsearchV2::Model
 
-        assert_respond_to DummyIncludingModel,     :__elasticsearch__
-        assert_respond_to DummyIncludingModel.new, :__elasticsearch__
+        assert_respond_to DummyIncludingModel,     :__elasticsearch_v2__
+        assert_respond_to DummyIncludingModel.new, :__elasticsearch_v2__
       end
 
       should "delegate important methods to the proxy" do

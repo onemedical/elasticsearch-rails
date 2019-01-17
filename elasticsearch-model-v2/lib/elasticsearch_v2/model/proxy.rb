@@ -5,7 +5,7 @@ module ElasticsearchV2
     # {ElasticsearchV2::Model}, preventing the pollution of the including class namespace.
     #
     # The only "gateway" between the model and ElasticsearchV2::Model is the
-    # `__elasticsearch__` class and instance method.
+    # `__elasticsearch_v2__` class and instance method.
     #
     # The including class must be compatible with
     # [ActiveModel](https://github.com/rails/rails/tree/master/activemodel).
@@ -16,7 +16,7 @@ module ElasticsearchV2
     #       include ElasticsearchV2::Model
     #     end
     #
-    #     Article.__elasticsearch__.respond_to?(:search)
+    #     Article.__elasticsearch_v2__.respond_to?(:search)
     #     # => true
     #
     #     article = Article.first
@@ -24,12 +24,12 @@ module ElasticsearchV2
     #     article.respond_to? :index_document
     #     # => false
     #
-    #     article.__elasticsearch__.respond_to?(:index_document)
+    #     article.__elasticsearch_v2__.respond_to?(:index_document)
     #     # => true
     #
     module Proxy
 
-      # Define the `__elasticsearch__` class and instance methods in the including class
+      # Define the `__elasticsearch_v2__` class and instance methods in the including class
       # and register a callback for intercepting changes in the model.
       #
       # @note The callback is triggered only when `ElasticsearchV2::Model` is included in the
@@ -37,20 +37,20 @@ module ElasticsearchV2
       #
       def self.included(base)
         base.class_eval do
-          # {ClassMethodsProxy} instance, accessed as `MyModel.__elasticsearch__`
+          # {ClassMethodsProxy} instance, accessed as `MyModel.__elasticsearch_v2__`
           #
-          def self.__elasticsearch__ &block
-            @__elasticsearch__ ||= ClassMethodsProxy.new(self)
-            @__elasticsearch__.instance_eval(&block) if block_given?
-            @__elasticsearch__
+          def self.__elasticsearch_v2__ &block
+            @__elasticsearch_v2__ ||= ClassMethodsProxy.new(self)
+            @__elasticsearch_v2__.instance_eval(&block) if block_given?
+            @__elasticsearch_v2__
           end
 
-          # {InstanceMethodsProxy}, accessed as `@mymodel.__elasticsearch__`
+          # {InstanceMethodsProxy}, accessed as `@mymodel.__elasticsearch_v2__`
           #
-          def __elasticsearch__ &block
-            @__elasticsearch__ ||= InstanceMethodsProxy.new(self)
-            @__elasticsearch__.instance_eval(&block) if block_given?
-            @__elasticsearch__
+          def __elasticsearch_v2__ &block
+            @__elasticsearch_v2__ ||= InstanceMethodsProxy.new(self)
+            @__elasticsearch_v2__.instance_eval(&block) if block_given?
+            @__elasticsearch_v2__
           end
 
           # Register a callback for storing changed attributes for models which implement
@@ -59,8 +59,8 @@ module ElasticsearchV2
           # @see http://api.rubyonrails.org/classes/ActiveModel/Dirty.html
           #
           before_save do |i|
-            changed_attr = i.__elasticsearch__.instance_variable_get(:@__changed_attributes) || {}
-            i.__elasticsearch__.instance_variable_set(:@__changed_attributes,
+            changed_attr = i.__elasticsearch_v2__.instance_variable_get(:@__changed_attributes) || {}
+            i.__elasticsearch_v2__.instance_variable_set(:@__changed_attributes,
                                                       changed_attr.merge(Hash[ i.changes.map { |key, value| [key, value.last] } ]))
           end if respond_to?(:before_save) && instance_methods.include?(:changed_attributes)
         end
@@ -68,10 +68,10 @@ module ElasticsearchV2
 
       # @overload dup
       #
-      # Returns a copy of this object. Resets the __elasticsearch__ proxy so
+      # Returns a copy of this object. Resets the __elasticsearch_v2__ proxy so
       # the duplicate will build its own proxy.
       def initialize_dup(_)
-        @__elasticsearch__ = nil
+        @__elasticsearch_v2__ = nil
         super
       end
 
@@ -121,7 +121,7 @@ module ElasticsearchV2
         end
 
         def class
-          klass.__elasticsearch__
+          klass.__elasticsearch_v2__
         end
 
         # Need to redefine `as_json` because we're not inheriting from `BasicObject`;

@@ -79,9 +79,9 @@ module ElasticsearchV2
           #
           def self.included(base)
             base.class_eval do
-              after_commit lambda { __elasticsearch__.index_document  },  on: :create
-              after_commit lambda { __elasticsearch__.update_document },  on: :update
-              after_commit lambda { __elasticsearch__.delete_document },  on: :destroy
+              after_commit lambda { __elasticsearch_v2__.index_document  },  on: :create
+              after_commit lambda { __elasticsearch_v2__.update_document },  on: :update
+              after_commit lambda { __elasticsearch_v2__.delete_document },  on: :destroy
             end
           end
         end
@@ -108,7 +108,7 @@ module ElasticsearchV2
           end
 
           def __transform
-            lambda { |model|  { index: { _id: model.id, data: model.__elasticsearch__.as_indexed_json } } }
+            lambda { |model|  { index: { _id: model.id, data: model.__elasticsearch_v2__.as_indexed_json } } }
           end
         end
       end

@@ -27,11 +27,11 @@ module ElasticsearchV2
           end
 
           MyNamespace::Article.delete_all
-          MyNamespace::Article.__elasticsearch__.create_index! force: true
+          MyNamespace::Article.__elasticsearch_v2__.create_index! force: true
 
           MyNamespace::Article.create! title: 'Test'
 
-          MyNamespace::Article.__elasticsearch__.refresh_index!
+          MyNamespace::Article.__elasticsearch_v2__.refresh_index!
         end
 
         should "have proper index name and document type" do

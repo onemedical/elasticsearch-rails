@@ -36,7 +36,7 @@ if Mongo.available?
               ElasticsearchV2::Model::Adapter::Mongoid,
               lambda { |klass| !!defined?(::Mongoid::Document) && klass.respond_to?(:ancestors) && klass.ancestors.include?(::Mongoid::Document) }
 
-            MongoidArticle.__elasticsearch__.create_index! force: true
+            MongoidArticle.__elasticsearch_v2__.create_index! force: true
 
             MongoidArticle.delete_all
 
@@ -44,8 +44,8 @@ if Mongo.available?
             MongoidArticle.create! title: 'Testing Coding'
             MongoidArticle.create! title: 'Coding'
 
-            MongoidArticle.__elasticsearch__.refresh_index!
-            MongoidArticle.__elasticsearch__.client.cluster.health wait_for_status: 'yellow'
+            MongoidArticle.__elasticsearch_v2__.refresh_index!
+            MongoidArticle.__elasticsearch_v2__.client.cluster.health wait_for_status: 'yellow'
           end
 
           should "index and find a document" do
@@ -97,7 +97,7 @@ if Mongo.available?
             article.destroy
             assert_equal 2, MongoidArticle.count
 
-            MongoidArticle.__elasticsearch__.refresh_index!
+            MongoidArticle.__elasticsearch_v2__.refresh_index!
 
             response = MongoidArticle.search 'title:test'
 
@@ -111,7 +111,7 @@ if Mongo.available?
             article.title = 'Writing'
             article.save
 
-            MongoidArticle.__elasticsearch__.refresh_index!
+            MongoidArticle.__elasticsearch_v2__.refresh_index!
 
             response = MongoidArticle.search 'title:write'
 
@@ -143,14 +143,14 @@ if Mongo.available?
             setup do
               MongoidArticle.delete_all
               97.times { |i| MongoidArticle.create! title: "Test #{i}" }
-              MongoidArticle.__elasticsearch__.create_index! force: true
-              MongoidArticle.__elasticsearch__.client.cluster.health wait_for_status: 'yellow'
+              MongoidArticle.__elasticsearch_v2__.create_index! force: true
+              MongoidArticle.__elasticsearch_v2__.client.cluster.health wait_for_status: 'yellow'
             end
 
             should "import all the documents" do
               assert_equal 97, MongoidArticle.count
 
-              MongoidArticle.__elasticsearch__.refresh_index!
+              MongoidArticle.__elasticsearch_v2__.refresh_index!
               assert_equal 0, MongoidArticle.search('*').results.total
 
               batches = 0
@@ -161,7 +161,7 @@ if Mongo.available?
               assert_equal 0, errors
               assert_equal 10, batches
 
-              MongoidArticle.__elasticsearch__.refresh_index!
+              MongoidArticle.__elasticsearch_v2__.refresh_index!
               assert_equal 97, MongoidArticle.search('*').results.total
 
               response = MongoidArticle.search('test')

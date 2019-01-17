@@ -102,18 +102,18 @@ class Article
 end
 ```
 
-#### The `__elasticsearch__` Proxy
+#### The `__elasticsearch_v2__` Proxy
 
 The `ElasticsearchV2::Model` module contains a big amount of class and instance methods to provide
 all its functionality. To prevent polluting your model namespace, this functionality is primarily
-available via the `__elasticsearch__` class and instance level proxy methods;
+available via the `__elasticsearch_v2__` class and instance level proxy methods;
 see the `ElasticsearchV2::Model::Proxy` class documentation for technical information.
 
 The module will include important methods, such as `search`, into the class or module only
 when they haven't been defined already. Following two calls are thus functionally equivalent:
 
 ```ruby
-Article.__elasticsearch__.search 'fox'
+Article.__elasticsearch_v2__.search 'fox'
 Article.search 'fox'
 ```
 
@@ -125,14 +125,14 @@ The module will set up a [client](https://github.com/elastic/elasticsearch-ruby/
 connected to `localhost:9200`, by default. You can access and use it as any other `ElasticsearchV2::Client`:
 
 ```ruby
-Article.__elasticsearch__.client.cluster.health
+Article.__elasticsearch_v2__.client.cluster.health
 # => { "cluster_name"=>"elasticsearch", "status"=>"yellow", ... }
 ```
 
 To use a client with different configuration, just set up a client for the model:
 
 ```ruby
-Article.__elasticsearch__.client = ElasticsearchV2::Client.new host: 'api.server.org'
+Article.__elasticsearch_v2__.client = ElasticsearchV2::Client.new host: 'api.server.org'
 ```
 
 Or configure the client for all models:
@@ -407,8 +407,8 @@ Article.settings.to_hash
 You can use the defined settings and mappings to create an index with desired configuration:
 
 ```ruby
-Article.__elasticsearch__.client.indices.delete index: Article.index_name rescue nil
-Article.__elasticsearch__.client.indices.create \
+Article.__elasticsearch_v2__.client.indices.delete index: Article.index_name rescue nil
+Article.__elasticsearch_v2__.client.indices.create \
   index: Article.index_name,
   body: { settings: Article.settings.to_hash, mappings: Article.mappings.to_hash }
 ```
@@ -416,8 +416,8 @@ Article.__elasticsearch__.client.indices.create \
 There's a shortcut available for this common operation (convenient e.g. in tests):
 
 ```ruby
-Article.__elasticsearch__.create_index! force: true
-Article.__elasticsearch__.refresh_index!
+Article.__elasticsearch_v2__.create_index! force: true
+Article.__elasticsearch_v2__.refresh_index!
 ```
 
 By default, index name and document type will be inferred from your class name,
@@ -436,7 +436,7 @@ Usually, we need to update the Elasticsearch index when records in the database 
 use the `index_document`, `update_document` and `delete_document` methods, respectively:
 
 ```ruby
-Article.first.__elasticsearch__.index_document
+Article.first.__elasticsearch_v2__.index_document
 # => {"ok"=>true, ... "_version"=>2}
 ```
 
@@ -486,15 +486,15 @@ class Article < ActiveRecord::Base
   include ElasticsearchV2::Model
 
   after_commit on: [:create] do
-    __elasticsearch__.index_document if self.published?
+    __elasticsearch_v2__.index_document if self.published?
   end
 
   after_commit on: [:update] do
-    __elasticsearch__.update_document if self.published?
+    __elasticsearch_v2__.update_document if self.published?
   end
 
   after_commit on: [:destroy] do
-    __elasticsearch__.delete_document if self.published?
+    __elasticsearch_v2__.delete_document if self.published?
   end
 end
 ```
@@ -562,7 +562,7 @@ By default, the model instance will be serialized to JSON using the `as_indexed_
 which is defined automatically by the `ElasticsearchV2::Model::Serializing` module:
 
 ```ruby
-Article.first.__elasticsearch__.as_indexed_json
+Article.first.__elasticsearch_v2__.as_indexed_json
 # => {"id"=>1, "title"=>"Quick brown fox"}
 ```
 
