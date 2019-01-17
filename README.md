@@ -14,7 +14,7 @@ This repository contains various Ruby and Rails integrations for [Elasticsearch]
 * Templates for generating example Rails application
 
 Elasticsearch client and Ruby API is provided by the
-**[elasticsearch-ruby](https://github.com/elasticsearch/elasticsearch-ruby)** project.
+**[elasticsearch-ruby](https://github.com/onemedical/elasticsearch-ruby)** project.
 
 ## Compatibility
 
@@ -34,39 +34,34 @@ is compatible with the Elasticsearch `master` branch, therefore, with the next m
 
 Install each library from [Rubygems](https://rubygems.org/gems/elasticsearch):
 
-```ruby
-gem install elasticsearch-model
-gem install elasticsearch-rails
-```
-
 To use an unreleased version, add it to your `Gemfile` for [Bundler](http://bundler.io):
 
 ```ruby
-gem 'elasticsearch-model', github: 'elastic/elasticsearch-rails', branch: '5.x'
-gem 'elasticsearch-rails', github: 'elastic/elasticsearch-rails', branch: '5.x'
+gem 'elasticsearch-model-v2', github: 'onemedical/elasticsearch-rails', branch: 'onemedical/es2namespace'
+gem 'elasticsearch-rails-v2', github: 'onemedical/elasticsearch-rails', branch: 'onemedical/es2namespace'
 ```
 
 ## Usage
 
 This project is split into three separate gems:
 
-* [**`elasticsearch-model`**](https://github.com/elasticsearch/elasticsearch-rails/tree/master/elasticsearch-model),
+* [**`elasticsearch-model-v2`**](https://github.com/onemedical/elasticsearch-rails/tree/onemedical/es2namespace/elasticsearch-model-v2),
   which contains search integration for Ruby/Rails models such as ActiveRecord::Base and Mongoid,
 
-* [**`elasticsearch-persistence`**](https://github.com/elasticsearch/elasticsearch-rails/tree/master/elasticsearch-persistence),
+* [**`elasticsearch-persistence-v2`**](https://github.com/onemedical/elasticsearch-rails/tree/onemedical/es2namespace/elasticsearch-persistence-v2),
   which provides a standalone persistence layer for Ruby/Rails objects and models
 
-* [**`elasticsearch-rails`**](https://github.com/elasticsearch/elasticsearch-rails/tree/master/elasticsearch-rails),
+* [**`elasticsearch-rails-v2`**](https://github.com/onemedical/elasticsearch-rails/tree/onemedical/es2namespace/elasticsearch-rails-v2),
   which contains various features for Ruby on Rails applications
 
 Example of a basic integration into an ActiveRecord-based model:
 
 ```ruby
-require 'elasticsearch/model'
+require 'elasticsearch_v2/model'
 
 class Article < ActiveRecord::Base
-  include Elasticsearch::Model
-  include Elasticsearch::Model::Callbacks
+  include ElasticsearchV2::Model
+  include ElasticsearchV2::Model::Callbacks
 end
 
 Article.import
@@ -75,10 +70,10 @@ Article.import
 ```
 
 You can generate a simple Ruby on Rails application with a single command
-(see the [other available templates](https://github.com/elasticsearch/elasticsearch-rails/tree/master/elasticsearch-rails#rails-application-templates)):
+(see the [other available templates](https://github.com/onemedical/elasticsearch-rails-v2/tree/onemedical/es2namespace/elasticsearch-rails#rails-application-templates)):
 
 ```bash
-rails new searchapp --skip --skip-bundle --template https://raw.github.com/elasticsearch/elasticsearch-rails/master/elasticsearch-rails/lib/rails/templates/01-basic.rb
+rails new searchapp --skip --skip-bundle --template https://raw.github.com/elasticsearch/elasticsearch-rails/master/elasticsearch-rails-v2/lib/rails/templates/01-basic.rb
 ```
 
 Example of using Elasticsearch as a repository for a Ruby domain object:
@@ -90,8 +85,8 @@ class Article
   attribute :title, String
 end
 
-require 'elasticsearch/persistence'
-repository = Elasticsearch::Persistence::Repository.new
+require 'elasticsearch_v2/persistence'
+repository = ElasticsearchV2::Persistence::Repository.new
 
 repository.save Article.new(title: 'Test')
 # POST http://localhost:9200/repository/article
@@ -101,9 +96,9 @@ repository.save Article.new(title: 'Test')
 Example of using Elasticsearch as a persistence layer for a Ruby model:
 
 ```ruby
-require 'elasticsearch/persistence/model'
+require 'elasticsearch_v2/persistence/model'
 class Article
-  include Elasticsearch::Persistence::Model
+  include ElasticsearchV2::Persistence::Model
   attribute :title, String, mapping: { analyzer: 'snowball' }
 end
 
@@ -116,21 +111,21 @@ Article.create title: 'Test'
 
 ### Model
 
-* [[README]](https://github.com/elasticsearch/elasticsearch-rails/blob/master/elasticsearch-model/README.md)
+* [[README]](https://github.com/onemedical/elasticsearch-rails/blob/master/elasticsearch-model/README.md)
 * [[Documentation]](http://rubydoc.info/gems/elasticsearch-model/)
-* [[Test Suite]](https://github.com/elasticsearch/elasticsearch-rails/blob/master/elasticsearch-model/test)
+* [[Test Suite]](https://github.com/onemedical/elasticsearch-rails/blob/master/elasticsearch-model/test)
 
 ### Persistence
 
-* [[README]](https://github.com/elasticsearch/elasticsearch-rails/blob/master/elasticsearch-persistence/README.md)
+* [[README]](https://github.com/onemedical/elasticsearch-rails/blob/master/elasticsearch-persistence/README.md)
 * [[Documentation]](http://rubydoc.info/gems/elasticsearch-persistence/)
-* [[Test Suite]](https://github.com/elasticsearch/elasticsearch-rails/blob/master/elasticsearch-persistence/test)
+* [[Test Suite]](https://github.com/onemedical/elasticsearch-rails/blob/master/elasticsearch-persistence/test)
 
 ### Rails
 
-* [[README]](https://github.com/elasticsearch/elasticsearch-rails/blob/master/elasticsearch-rails/README.md)
+* [[README]](https://github.com/onemedical/elasticsearch-rails/blob/master/elasticsearch-rails/README.md)
 * [[Documentation]](http://rubydoc.info/gems/elasticsearch-rails)
-* [[Test Suite]](https://github.com/elasticsearch/elasticsearch-rails/blob/master/elasticsearch-rails/test)
+* [[Test Suite]](https://github.com/onemedical/elasticsearch-rails/blob/master/elasticsearch-rails/test)
 
 ## Development
 
@@ -157,7 +152,7 @@ The test suite expects an Elasticsearch cluster running on port 9250, and **will
 
     TEST_CLUSTER_COMMAND=/tmp/builds/elasticsearch-2.0.0-SNAPSHOT/bin/elasticsearch TEST_CLUSTER_NODES=1 bundle exec rake test:cluster:start
 
-See more information in the documentation  for the [`elasticsearch-extensions`](https://github.com/elasticsearch/elasticsearch-ruby/tree/master/elasticsearch-extensions#testcluster) gem.
+See more information in the documentation  for the [`elasticsearch-extensions`](https://github.com/onemedical/elasticsearch-ruby/tree/onemedical/es2namespace/elasticsearch-extensions#testcluster) gem.
 
 ## License
 

@@ -1,6 +1,6 @@
 require 'pathname'
 
-subprojects = %w| elasticsearch-rails elasticsearch-persistence elasticsearch-model |
+subprojects = %w| elasticsearch-rails-v2 elasticsearch-persistence-v2 elasticsearch-model-v2 |
 
 __current__ = Pathname( File.expand_path('..', __FILE__) )
 
@@ -94,19 +94,19 @@ namespace :test do
     desc "Start Elasticsearch nodes for tests"
     task :start do
       require 'elasticsearch/extensions/test/cluster'
-      Elasticsearch::Extensions::Test::Cluster.start
+      ElasticsearchV2::Extensions::Test::Cluster.start
     end
 
     desc "Stop Elasticsearch nodes for tests"
     task :stop do
       require 'elasticsearch/extensions/test/cluster'
-      Elasticsearch::Extensions::Test::Cluster.stop
+      ElasticsearchV2::Extensions::Test::Cluster.stop
     end
 
     task :status do
       require 'elasticsearch/extensions/test/cluster'
-      (puts "\e[31m[!] Test cluster not running\e[0m"; exit(1)) unless Elasticsearch::Extensions::Test::Cluster.running?
-      Elasticsearch::Extensions::Test::Cluster.__print_cluster_info(ENV['TEST_CLUSTER_PORT'] || 9250)
+      (puts "\e[31m[!] Test cluster not running\e[0m"; exit(1)) unless ElasticsearchV2::Extensions::Test::Cluster.running?
+      ElasticsearchV2::Extensions::Test::Cluster.__print_cluster_info(ENV['TEST_CLUSTER_PORT'] || 9250)
     end
   end
 end
